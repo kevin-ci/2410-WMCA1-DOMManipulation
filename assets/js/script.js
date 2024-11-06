@@ -8,18 +8,21 @@ let hero = {
             damage: 5,
             quote: "Take this, you bandaged boob,",
             chance: 95,
+            audio: "stab",
         },
         {
             name: "Freeze Ray",
             damage: 10,
             quote: "Cool off, you decaying wimp,",
             chance: 80,
+            audio: "ice",
         },
         {
             name: "Havoc Staff",
             damage: 20,
             quote: "You'll need more bandages after this,",
             chance: 60,
+            audio: "magic",
         },
     ],
     attack(id) {
@@ -27,7 +30,7 @@ let hero = {
         let statusUpdate = `"${chosenAttack.quote}" said ${this.name} as he used his ${chosenAttack.name} attack.`;
         let attackChance = Math.ceil(Math.random() * 100);
         let attackDamage = (attackChance <= chosenAttack.chance) ? chosenAttack.damage : 1;
-        return [attackDamage, statusUpdate];
+        return [attackDamage, statusUpdate, chosenAttack.audio];
     },
     die() {
         return `"NYAAAARRRRGGGGGHHHHHHH!!!!" roared Skeletor, as his ambiguous, lifeless body fell to the ground.`;
@@ -62,7 +65,7 @@ let villain = {
         return [chosenAttack.damage, status];
     },
     die() {
-            return `"Curses! I'll get you next time," Mumm-Ra rasped as he temporarily died.`;
+        return `"Curses! I'll get you next time," Mumm-Ra rasped as he temporarily died.`;
     },
 };
 
@@ -93,10 +96,11 @@ for (let i = 0; i < hero.attacks.length; i++) {
 
 const attackButtons = document.getElementsByTagName("button");
 for (let button of attackButtons) {
-    button.addEventListener('click', function() {
+    button.addEventListener('click', function () {
         if (playerTurn) {
             let attackId = this.getAttribute('data-attack-id');
             let heroAttack = hero.attack(attackId);
+            playSound(heroAttack[2]);
             statusAreaElement.innerText = heroAttack[1];
             villain.health -= heroAttack[0];
             displayHealth(false);
@@ -131,4 +135,9 @@ function displayHealth(player) {
     else {
         villainHealthElement.innerText = villain.health;
     }
+}
+
+function playSound(fileName) {
+    var audio = new Audio(`./assets/sounds/${fileName}.mp3`);
+    audio.play();
 }
